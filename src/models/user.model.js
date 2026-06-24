@@ -59,7 +59,7 @@ const userSchema = new Schema({
 )
 userSchema.pre("save" ,async function (next){
     if(!this.isModified("password")) return next(); // if case yha pe isliye use hua kyu ki we dontwant to regualry update the password on everything save , we will check password toh nahi n chek hua hai toh we will do the things 
- this.password = bcrypt.hash(this.password,10)
+ this.password =  await bcrypt.hash(this.password,10)
  next()
 
 }) // yha pe main hook ka use kiya mai chahta hu jab bhi mera data save ho mujhe yha pr e use krna hai (hook ek middleware hai jisko hmko use krnte hai to provied a before implication power jasie ki password hashinh me save ho fir dehashing me dikkat higa isiye we are using hook )
