@@ -1,4 +1,7 @@
 import mongoose,{Schema} from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
 
 const userSchema = new Schema({
     username: {
@@ -16,7 +19,7 @@ const userSchema = new Schema({
         lowercase:true,
         trim: true,
     }, 
-     fullName: {
+     fullname: {
         type :String ,
         required : true, 
         lowercase:true,
@@ -24,8 +27,9 @@ const userSchema = new Schema({
         index: true
     }, 
     avatar:{
-        type:String ,// cloudinary url
-        required : true ,
+        type:String ,// cloudinary url 
+        default :""
+     //   required : true ,
 
     }, 
     coverImage:{
@@ -49,7 +53,7 @@ const userSchema = new Schema({
     }
 },
     {
-    timestamps:truen
+    timestamps:true
 
     }
 
@@ -57,10 +61,10 @@ const userSchema = new Schema({
 
 
 )
-userSchema.pre("save" ,async function (next){
-    if(!this.isModified("password")) return next(); // if case yha pe isliye use hua kyu ki we dontwant to regualry update the password on everything save , we will check password toh nahi n chek hua hai toh we will do the things 
+userSchema.pre("save" ,async function (){
+    if(!this.isModified("password")) return ; // if case yha pe isliye use hua kyu ki we dontwant to regualry update the password on everything save , we will check password toh nahi n chek hua hai toh we will do the things 
  this.password =  await bcrypt.hash(this.password,10)
- next()
+ 
 
 }) // yha pe main hook ka use kiya mai chahta hu jab bhi mera data save ho mujhe yha pr e use krna hai (hook ek middleware hai jisko hmko use krnte hai to provied a before implication power jasie ki password hashinh me save ho fir dehashing me dikkat higa isiye we are using hook )
  userSchema.methods.isPasswordCorrect = async function (password){
@@ -87,13 +91,11 @@ userSchema.methods.generateRefreshToken = function(){
 return Jwt.sign(
     {
         _id:this._id,
-        email:this.email,
-        username:this.username,
-        fullName:this.fullName
+   
     } ,// payload ke liye ye sb diaya hai 
-    process.env.ACCESS_TOKEN_SECRET,
+    process.env.REFRESH_TOKEN_SECRET,
     {
-        expireIn:process.env.ACCESS_TOKEN_EXPIRY
+        expireIn:process.env.REFRESH_TOKEN_EXPIRY
     }
 )
 }
