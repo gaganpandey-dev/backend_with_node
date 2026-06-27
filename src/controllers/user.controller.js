@@ -146,7 +146,8 @@ const loginUser = asyncHandler(async(req,res) =>{
     //send cookie 
 
     const {email , username,password} = req.body 
-    if (!username || !email){
+    if (!username && !email){ // he we want to use like we want dono me se ek toh we will write
+      //if(!(username || email))
       throw new ApiError(400, " username or email is required ")
     }
 
@@ -177,7 +178,7 @@ const options = {
 return res
 .status(200)
 .cookie("accessToken", accessToken ,options)
-.cookie("refreshToken")
+.cookie("refreshToken", refreshToken ,options)
 .json(
     new ApiResponse(
       200,{
@@ -189,8 +190,33 @@ refreshToken
 )
 
 
+})
 
 
+
+
+const logoutUser  = asyncHandler(async(req,res)=>{
+     await User.findByIdAndUpdate(// find and update kyu ki we want it to get the details of user through id and update the token 
+           req.user._id,
+           {
+  $set: {// set gives us object jo kehta hai kya kya update krna hai vo milte hi vo update kr deta hai 
+     refreshToken:undefined
+  }
+     } ,
+     {
+      new:true
+     }
+
+  )
+  const options ={
+    httpOnly:true ,
+    secure :true 
+  }
+  return res 
+  .status(200)
+  .clearCookie("accessToken",options)
+  .clearCookie("refreshToken",options)
+  .json(new ApiResponse(200 ,{},"user logged out "))
 
 })
 
@@ -198,7 +224,9 @@ refreshToken
 
 
 
-export{registerUser,
-  loginUser
+export{
+  registerUser,
+  loginUser , 
+  logoutUser
 }
 

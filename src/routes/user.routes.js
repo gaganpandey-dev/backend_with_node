@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { registerUser } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 
 
@@ -19,11 +20,14 @@ maxCount:1
 
  } //middleware ka use kr kr rhe hai malter yha pe hm do files uplad kr rhe ek ka nam hai avtar aur dusara coverimage dono ka max limit hai 1 ek se jyada nhi
  
-
-
-
 ]),registerUser) ;
 
+
+router.route("/login").post(loginUser)
+
+
+// secured routes 
+router.route("/logout").post( verifyJWT , logoutUser)
 
 
 
