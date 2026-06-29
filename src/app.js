@@ -24,7 +24,7 @@ import userRouter from './routes/user.routes.js'
 
 
  // routes declaration
- app.use("/api/v1/users",userRouter) // yha ser controll user.routes me transfer hota hai 
+ app.use("/api/v1/users", userRouter) // yha ser controll user.routes me transfer hota hai 
 
 
 
